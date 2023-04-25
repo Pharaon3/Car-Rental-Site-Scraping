@@ -1,5 +1,3 @@
-from config import *
-from setting import *
 import csv
 import threading
 
@@ -11,6 +9,8 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
 import undetected_chromedriver as uc
 import pandas as pd
 import time
@@ -19,32 +19,32 @@ import csv
 from datetime import datetime
 from datetime import date
 
-def execute_code():
-    threading.Timer(120.0, execute_code).start()
-    profile_id = fnGetUUID()
-    port = get_debug_port(profile_id)
-    driver = get_webdriver(port)
-    with open('state.csv', mode='r') as file:
-        reader = csv.reader(file)
-        with open('location.csv', mode='w', newline='') as file:
-            writer = csv.writer(file)
-            for row in reader:
-                print(row)
-                print(row[0])
-                print(row[1])
-                driver.get(row[1])
-                time.sleep(2)
+options = webdriver.ChromeOptions()
+# options.add_argument('headless')
+options.add_argument('window-size=1920x1080')
+options.add_argument("disable-gpu")
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), chrome_options=options)
 
-                citiesClass = 'location-list-ul'
-                cities = driver.find_elements(By.CLASS_NAME, citiesClass)
-                for c in range(0, len(cities)):
-                    cities1 = cities[c].find_elements(By.TAG_NAME, 'li')
-                    for c1 in range(0, len(cities1)):
-                        if cities1[c1].get_attribute('class') == '':
-                            city = cities1[c1].find_element(By.TAG_NAME, 'a').get_attribute('innerHTML')
-                            citylink = cities1[c1].find_element(By.TAG_NAME, 'a').get_attribute('href')
-                            writer.writerow([row[0], city, citylink])
-                            print(city)
-                            print(citylink)
-    driver.close()    
-execute_code()
+with open('state.csv', mode='r') as file:
+    reader = csv.reader(file)
+    with open('location.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        for row in reader:
+            print(row)
+            print(row[0])
+            print(row[1])
+            driver.get(row[1])
+            time.sleep(2)
+
+            citiesClass = 'location-list-ul'
+            cities = driver.find_elements(By.CLASS_NAME, citiesClass)
+            for c in range(0, len(cities)):
+                cities1 = cities[c].find_elements(By.TAG_NAME, 'li')
+                for c1 in range(0, len(cities1)):
+                    if cities1[c1].get_attribute('class') == '':
+                        city = cities1[c1].find_element(By.TAG_NAME, 'a').get_attribute('innerHTML')
+                        citylink = cities1[c1].find_element(By.TAG_NAME, 'a').get_attribute('href')
+                        writer.writerow([row[0], city, citylink])
+                        print(city)
+                        print(citylink)
+driver.close()    
