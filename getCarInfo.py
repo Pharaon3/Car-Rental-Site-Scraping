@@ -24,7 +24,7 @@ def execute_code():
     profile_id = fnGetUUID()
     port = get_debug_port(profile_id)
     driver = get_webdriver(port)
-    with open('fullLocation1.csv', mode='r') as file:
+    with open('fullLocation.csv', mode='r') as file:
         reader = csv.reader(file)
         with open('car.csv', mode='w', newline='') as file:
             writer = csv.writer(file)
