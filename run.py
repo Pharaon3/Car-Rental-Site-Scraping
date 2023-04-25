@@ -1,6 +1,6 @@
 from config import *
 from setting import *
-
+import csv
 import threading
 
 from selenium import webdriver
@@ -26,11 +26,42 @@ def execute_code():
     port = get_debug_port(profile_id)
     driver = get_webdriver(port)
     driver.get(TARGET_URL)
-    time.sleep(60)
+    driver1 = get_webdriver(port)
+    
+    time.sleep(2)
 
     stateName = '//*[@id="avisHome"]/div[2]/div[2]/div/section/div[2]/ul'
+    titlePath = '//*[@id="avisHome"]/div[2]/div[2]/div/section/div[1]/h1'
     stateElement = driver.find_element(By.XPATH, stateName)
-    print(stateElement)
+    # children = stateElement.find_element(By.TAG_NAME, "li")
+    children = stateElement.find_elements(By.XPATH, './li')
+    # children = stateElement.childrens
+    # print(children)
+    # print(len(children))
+    with open('data.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["stateName", "stateHref"])
+        for c in range(0, len(children)):
+            stateName = children[c].find_element(By.XPATH, './a').get_attribute("innerHTML")
+            stateHref = children[c].find_element(By.XPATH, './a').get_attribute("href")
+            print(stateName)
+            print(stateHref)
+            writer.writerow([stateName, stateHref])
+
+            # driver.execute_script("window.open('');")
+            # time.sleep(10)
+            # driver.switch_to.window(driver.window_handles[1])
+            # TARGET_URL1 = stateHref
+            # driver.get(TARGET_URL1)
+
+            # locationPath = '//*[@id="avisHome"]/div[2]/div[4]/section/div/div/div[2]'
+            # time.sleep(2)
+            # locationClass = driver.find_element(By.XPATH, locationPath).get_attribute("class")
+            # print(locationPath)
+            # driver.switch_to.window(driver.window_handles[0])
+            # time.sleep(1)
+
+    # print(stateElement)
 
     # league_name = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[4]/div[2]/div/div/div[2]/div[1]/div/div/div[1]/div/div[2]/div[1]/div/span').text
     # match_round = driver.find_element(By.XPATH, '/html/body/div[1]/div/div[4]/div[2]/div/div/div[2]/div[1]/div/div/div[2]/div/div/div[2]/div[1]/div[1]/div/span').text
